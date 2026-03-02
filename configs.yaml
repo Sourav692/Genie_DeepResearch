@@ -15,7 +15,7 @@ agent_configs:
   conversation:
     max_messages: 7  # Maximum number of conversational messages to keep in context
   llm:
-    endpoint_name: "databricks-claude-3-7-sonnet"
+    endpoint_name: "databricks-claude-opus-4-6"
     temperature: 0.1  # Lower temperature for more consistent supervisor routing
   genie_agent:
     space_id: 01f0d6ff25da1f229950bb97c1ec974c
@@ -86,8 +86,8 @@ agent_configs:
       
       **Action when clarification is detected:**
       1. **Look back at the conversation history** to find the ORIGINAL user question (before clarification was requested)
-      2. **Combine the original question with the clarification** to form a complete query
-      3. **Route to Genie** with the combined/complete query
+      2. **Combine the original question with the clarification** into one complete, self-contained query
+      3. **Output the combined query in the `refined_query` field** and route to Genie
       4. **DO NOT ask for clarification again** - you now have all the information needed
       
       **Example HITL Flow:**
@@ -152,8 +152,8 @@ agent_configs:
       **If this IS a clarification response:**
       - should_plan_research = False
       - next_node = "Genie"
+      - refined_query = Combine the ORIGINAL question from conversation history with the clarification into one complete, self-contained query (e.g., "What are the lead counts for stage 4 on December 4th, 2025?")
       - Do NOT re-check for completeness - clarification was already provided
-      - The supervisor will combine context from conversation history
       
       **STEP 1: VALIDATE QUERY COMPLETENESS (Only for NEW queries)**
       
@@ -176,6 +176,7 @@ agent_configs:
       - Single metric queries with complete parameters
       - Direct data requests with all dimensions specified
       - Any query after user has provided clarification
+      - Always set refined_query to a clean, self-contained version of the question with all parameters explicit (dates, products, stages, platforms)
       
       **USE PARALLEL EXECUTOR** - Set should_plan_research=True and next_node="ParallelExecutor" ONLY when:
       - Complete query requires 3+ separate parallel queries
@@ -245,3 +246,15 @@ agent_configs:
       - Emphasize significant findings
       
       **Remember**: The goal is to either get missing information OR provide a complete, helpful answer.
+
+    quality_check_prompt: |
+      You are a quality reviewer for a data analytics agent. Evaluate whether the final answer adequately addresses the user's original question.
+      
+      **Criteria:**
+      1. **Specificity**: Does the answer contain concrete data points (numbers, percentages, counts) rather than vague generalities?
+      2. **Relevance**: Does the answer directly address what the user asked, or does it drift to tangential topics?
+      3. **Completeness**: Are all parts of the user's question addressed, or are some ignored?
+      4. **Data Grounding**: Is the answer clearly based on queried data, or does it appear fabricated?
+      
+      Set passes_quality_check=True if the answer reasonably meets all criteria.
+      Set passes_quality_check=False only for clear failures (vague non-answers, missing data, obvious hallucination). Include a brief reason.

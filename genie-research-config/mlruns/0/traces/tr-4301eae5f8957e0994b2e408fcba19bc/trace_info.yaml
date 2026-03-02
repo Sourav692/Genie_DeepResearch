@@ -1,0 +1,19 @@
+execution_duration_ms: 11174
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  lead counts for stage 4 on December 6th, 2025?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:41:06.631Z'
+response_preview: '{"messages": [{"content": "|    |   STAGE_ORDER | STAGE_NAMES                    |
+  lead_count   |\n|---:|--------------:|:-------------------------------|:-------------|\n|  0
+  |           4   | Welcome screen continue signup | 324887.0     |\n|  1 |           4   |
+  PERSONAL DETAILS PAGE SUBMIT   | 149893.0     |\n|  2 |           4   | PERSONAL
+  DETAILS PAGE GACB     | 401.0        |\n|  3 |           4.1 | Welcome screen back
+  signup     | 329784.0     |", "additional_kwargs": {}, "response_metadata": {},
+  "type": "ai", "name": "query_result", "id": null, "example": false, "tool_calls":
+  [], "invalid_tool_calls": [], "usage_metadata": null}]}'
+state: OK
+trace_id: tr-4301eae5f8957e0994b2e408fcba19bc
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

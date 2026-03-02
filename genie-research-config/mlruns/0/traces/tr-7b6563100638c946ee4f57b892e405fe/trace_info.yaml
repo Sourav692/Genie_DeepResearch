@@ -1,0 +1,15 @@
+execution_duration_ms: 25475
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  KPI failure counts broken down by journey stage (stage 0 through stage 4) and platform
+  (Android, iOS, Web) from February 23, 2026 to March 2, 2026?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:37:41.665Z'
+response_preview: '{"messages": [{"content": "EMPTY", "additional_kwargs": {}, "response_metadata":
+  {}, "type": "ai", "name": "query_result", "id": null, "example": false, "tool_calls":
+  [], "invalid_tool_calls": [], "usage_metadata": null}]}'
+state: OK
+trace_id: tr-7b6563100638c946ee4f57b892e405fe
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

@@ -1,0 +1,22 @@
+execution_duration_ms: 1299
+request_preview: '{"genie_space_id": "01f0d6ff25da1f229950bb97c1ec974c", "genie_agent_name":
+  "Genie", "description": "This genie agent analyzes digital customer journeys and
+  KPI performance across Personal Loans, Business Loans, Home Loans, and Gold Loans
+  products. \nIt tracks user progression through awareness, interest, consideration,
+  and conversion stages across organic and inorganic channels.\nThe agent provides
+  insights on event-level metrics, platform performance (Android/iOS/Web), app version
+  analysis, and hourly KPI success/failure rates.\nIt can answer questions about conversion
+  funnels, entry point effectiveness, journey stage drop-offs, and cross-platform
+  comparisons.\n\n**DATA AVAILABLE**: You have access to:\n- fact_event_summary_daily:
+  Event counts, distinct users by date, platform, app_version\n- fact_kpi_summary:
+  KPI success/failure counts by date and hour\n- dim_event: Stage definitions (stage
+  0-4 = awareness, interest, consideration, conversion, intent4)\n- dim_event_kpi:
+  Mappings b...'
+request_time: '2026-03-02T06:33:15.108Z'
+response_preview: '"RunnableLambda(...)"'
+state: OK
+trace_id: tr-91a2c60d37ad273d424517d2710fa97e
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

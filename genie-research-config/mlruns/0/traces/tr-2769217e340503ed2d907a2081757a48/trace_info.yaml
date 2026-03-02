@@ -1,0 +1,22 @@
+execution_duration_ms: 22439
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  daily event counts and KPI failure counts by product and stage from February 23,
+  2026 to March 2, 2026 to identify correlations between event patterns and KPI failures?"}]},
+  "genie": "<databricks_ai_bridge.genie.Genie object at 0x13d29b8c0>", "genie_agent_name":
+  "Genie", "include_context": false}'
+request_time: '2026-03-02T06:37:41.666Z'
+response_preview: '{"messages": [{"content": "|     | PRODUCT    |   STAGE_ORDER |
+  STAGE_NAMES                                                                                        |
+  DATE       | total_event_count   | total_kpi_failures   |\n|----:|:-----------|--------------:|:---------------------------------------------------------------------------------------------------|:-----------|:--------------------|:---------------------|\n|   0
+  | ONBOARDING |           0   | App Launched signup                                                                                |
+  2025-12-05 | 919693.0            |                      |\n|   1 | ONBOARDING |           0   |
+  App Launched signup                                                                                |
+  2025-12-06 | 851241.0            |                      |\n|   2 | ONBOARDING |           0   |
+  App Launched signup                                                                                |
+  2025-12-07 | 811782.0            |          ...'
+state: OK
+trace_id: tr-2769217e340503ed2d907a2081757a48
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

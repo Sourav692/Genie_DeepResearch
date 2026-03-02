@@ -1,0 +1,23 @@
+execution_duration_ms: 22782
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  KPI failure counts broken down by journey stage (stage 0 through stage 4) and platform
+  (Android, iOS, Web) from February 23, 2026 to March 2, 2026?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:39:23.581Z'
+response_preview: '{"messages": [{"content": "|    |   STAGE_ORDER | STAGE_NAMES                      |
+  PLATFORM   |   failure_count |\n|---:|--------------:|:---------------------------------|:-----------|----------------:|\n|  0
+  |             1 | Onboarding restriction signup    | Android    |               0
+  |\n|  1 |             1 | Onboarding restriction signup    | iOS        |               0
+  |\n|  2 |             1 | PDP PAGE VIEW                    | Android    |        34518750
+  |\n|  3 |             1 | PDP PAGE VIEW                    | iOS        |        40436250
+  |\n|  4 |             2 | PDP PAGE > APPLY NOW             | Android    |         2356900
+  |\n|  5 |             2 | PDP PAGE > APPLY NOW             | iOS        |         2434600
+  |\n|  6 |             2 | PDP PAGE > GACB                  | Android    |          207200
+  |\n|  7 |             2 | PDP PAGE > GACB                  | iOS        |          181300
+  |\n|  8 |             2 | PDP PAGE > RESUME APPLICATION    | Android    |...'
+state: OK
+trace_id: tr-34a53d749ea16e2f576ede1320980625
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

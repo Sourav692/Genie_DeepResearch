@@ -1,0 +1,22 @@
+execution_duration_ms: 21969
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  top 20 specific KPI names with the highest failure counts from February 23, 2026
+  to March 2, 2026, broken down by product and journey stage?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:33:55.633Z'
+response_preview: '{"messages": [{"content": "|    | KPI_NAME                | PRODUCT    |
+  STAGE_NAMES                      | total_failure_count   |\n|---:|:------------------------|:-----------|:---------------------------------|:----------------------|\n|  0
+  | custRelationshipDetails | RTL        | PDP PAGE VIEW                    | 4635354.0             |\n|  1
+  | custRelationshipDetails | SALPL      | PDP PAGE VIEW                    | 2317677.0             |\n|  2
+  | custRelationshipDetails | PLCS       | PDP PAGE VIEW                    | 1545118.0             |\n|  3
+  | custdemogdetails        | RTL        | PDP PAGE VIEW                    | 1450518.0             |\n|  4
+  | b2cchargecalculation    | RTL        | PDP PAGE VIEW                    | 1442934.0             |\n|  5
+  | custRelationshipDetails | PL         | PDP PAGE VIEW                    | 772559.0              |\n|  6
+  | custRelationshipDetails | PLPPL      | PDP PAGE VIEW                    | 772559.0              |\n|  7
+  | custRelat...'
+state: OK
+trace_id: tr-fb246b630d188352bb1b5e90d5ea128d
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

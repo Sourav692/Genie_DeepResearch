@@ -1,0 +1,23 @@
+execution_duration_ms: 17233
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  top product-platform-stage combinations with the highest KPI failure counts from
+  February 23, 2026 to March 2, 2026?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:41:50.133Z'
+response_preview: '{"messages": [{"content": "|    | PRODUCT    | PLATFORM   | STAGE_NAMES       |
+  total_kpi_failures   |\n|---:|:-----------|:-----------|:------------------|:---------------------|\n|  0
+  | RTL        | iOS        | PDP PAGE VIEW     | 4.07096286E8         |\n|  1 | RTL        |
+  Android    | PDP PAGE VIEW     | 3.30285666E8         |\n|  2 | SALPL      | iOS        |
+  PDP PAGE VIEW     | 2.70117347E8         |\n|  3 | SALPL      | Android    | PDP
+  PAGE VIEW     | 2.53475046E8         |\n|  4 | PLCS       | iOS        | PDP PAGE
+  VIEW     | 2.21470621E8         |\n|  5 | ONBOARDING | iOS        | OTP SUBMIT signup
+  | 1.65340028E8         |\n|  6 | PLCS       | Android    | PDP PAGE VIEW     | 1.65142833E8         |\n|  7
+  | ONBOARDING | Android    | OTP SUBMIT signup | 1.64325672E8         |\n|  8 | PL         |
+  Android    | PDP PAGE VIEW     | 1.13935753E8         |\n|  9 | PL         | iOS        |
+  PDP PAGE VIEW     | 1.07534868E8         |", "additional_kwargs": {}, "response_metadata":...'
+state: OK
+trace_id: tr-1475628c7ba0e48f43602c6818bfcfaf
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

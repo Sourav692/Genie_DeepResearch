@@ -1,0 +1,20 @@
+execution_duration_ms: 20177
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  KPI failure counts broken down by product type (PL, BL, HL, Gold Loan, RPL, IPL,
+  SBL) and platform (Android, iOS, Web) from February 23, 2026 to March 2, 2026? Show
+  both success and failure counts to calculate failure rates."}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:33:55.631Z'
+response_preview: '{"messages": [{"content": "|    | PRODUCT   | PLATFORM   | total_successes   |
+  total_failures   | failure_rate_pct   |\n|---:|:----------|:-----------|:------------------|:-----------------|:-------------------|\n|  0
+  | PL        | Android    | 1.1479420375E10   | 1.1949079E8      | 1.0301897160878895
+  |\n|  1 | PL        | iOS        | 1.0876907296E10   | 1.13587371E8     | 1.0335055376629847
+  |", "additional_kwargs": {}, "response_metadata": {}, "type": "ai", "name": "query_result",
+  "id": null, "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata":
+  null}]}'
+state: OK
+trace_id: tr-cb68a2b542444975727c634763491786
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

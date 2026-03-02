@@ -1,0 +1,22 @@
+execution_duration_ms: 18748
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  daily event counts and KPI failure counts by product and stage from February 23,
+  2026 to March 2, 2026 to identify correlation between event volume and failure rates?"}]},
+  "genie": "<databricks_ai_bridge.genie.Genie object at 0x13d29b8c0>", "genie_agent_name":
+  "Genie", "include_context": false}'
+request_time: '2026-03-02T06:41:50.133Z'
+response_preview: '{"messages": [{"content": "|     | DATE       | PRODUCT    |   STAGE_ORDER
+  | STAGE_NAMES                                                                                        |
+  event_count   | kpi_failure_count   |\n|----:|:-----------|:-----------|--------------:|:---------------------------------------------------------------------------------------------------|:--------------|:--------------------|\n|   0
+  | 2025-12-05 | ONBOARDING |           0   | App Launched signup                                                                                |
+  919693.0      | 0.0                 |\n|   1 | 2025-12-05 | ONBOARDING |           1   |
+  Onboarding restriction signup                                                                      |
+  1.1979308E7   | 0.0                 |\n|   2 | 2025-12-05 | ONBOARDING |          10   |
+  Ashield Success signup                                                                             |
+  302180.0      | 0.0                 |\n|   3 | 2025-12-05 |...'
+state: OK
+trace_id: tr-6d992bd2e145511ecc3f51ca789de169
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

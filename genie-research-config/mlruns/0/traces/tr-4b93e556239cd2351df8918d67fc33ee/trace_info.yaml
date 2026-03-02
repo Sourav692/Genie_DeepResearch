@@ -1,0 +1,24 @@
+execution_duration_ms: 21909
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  daily event counts and KPI failure counts by product and stage from February 23,
+  2026 to March 2, 2026 to identify correlations between event volume and failure
+  rates?"}]}, "genie": "<databricks_ai_bridge.genie.Genie object at 0x13d29b8c0>",
+  "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:39:23.583Z'
+response_preview: '{"messages": [{"content": "|     | DATE       | PRODUCT    |   STAGE_ORDER
+  | event_count   | kpi_failure_count   |\n|----:|:-----------|:-----------|--------------:|:--------------|:--------------------|\n|   0
+  | 2025-12-05 | ONBOARDING |           0   | 919693.0      | 0.0                 |\n|   1
+  | 2025-12-05 | ONBOARDING |           1   | 1.1979308E7   | 0.0                 |\n|   2
+  | 2025-12-05 | ONBOARDING |          10   | 302180.0      | 0.0                 |\n|   3
+  | 2025-12-05 | ONBOARDING |          11   | 198654.0      | 0.0                 |\n|   4
+  | 2025-12-05 | ONBOARDING |          12   | 119755.0      | 0.0                 |\n|   5
+  | 2025-12-05 | ONBOARDING |          14   | 267546.0      | 0.0                 |\n|   6
+  | 2025-12-05 | ONBOARDING |          15   | 1.539915E7    | 12314.0             |\n|   7
+  | 2025-12-05 | ONBOARDING |          15.1 | 37693.0       | 0.0                 |\n|   8
+  | 2025-12-05 | ONBOARDING |          16   | 442802.0      | 0.0           ...'
+state: OK
+trace_id: tr-4b93e556239cd2351df8918d67fc33ee
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

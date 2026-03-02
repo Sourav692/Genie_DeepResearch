@@ -1,0 +1,24 @@
+execution_duration_ms: 22921
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  KPI failure counts broken down by hour of day and journey stage (stage 0 through
+  stage 4) from February 23, 2026 to March 2, 2026? Include both success and failure
+  counts."}]}, "genie": "<databricks_ai_bridge.genie.Genie object at 0x13d29b8c0>",
+  "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:33:55.633Z'
+response_preview: '{"messages": [{"content": "|     |   STAGE_ORDER | STAGE_NAMES                      |   HOUR
+  | total_successes   | total_failures   |\n|----:|--------------:|:---------------------------------|-------:|:------------------|:-----------------|\n|   0
+  |             1 | Onboarding restriction signup    |      0 | 1451.0            |
+  0.0              |\n|   1 |             1 | PDP PAGE VIEW                    |      0
+  | 2.6150852E7       | 275114.0         |\n|   2 |             1 | PDP PAGE VIEW                    |      1
+  | 1.5624672E7       | 125972.0         |\n|   3 |             1 | Onboarding restriction
+  signup    |      1 | 578.0             | 0.0              |\n|   4 |             1
+  | Onboarding restriction signup    |     10 | 372744.0          | 0.0              |\n|   5
+  |             1 | PDP PAGE VIEW                    |     10 | 1.25894328E8      |
+  1113966.0        |\n|   6 |             1 | PDP PAGE VIEW                    |     11
+  | 1.42836736E8      | 1318534.0        |...'
+state: OK
+trace_id: tr-220dceb7e96f2958f890398fba6f7853
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

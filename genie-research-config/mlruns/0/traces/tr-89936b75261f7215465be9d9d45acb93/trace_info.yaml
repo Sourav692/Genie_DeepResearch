@@ -1,0 +1,23 @@
+execution_duration_ms: 16703
+request_preview: '{"input": {"messages": [{"role": "user", "content": "What are the
+  KPI failure counts broken down by hour of day and product type (PL, BL, HL, Gold
+  Loan, RPL, IPL, SBL) from February 23, 2026 to March 2, 2026?"}]}, "genie": "<databricks_ai_bridge.genie.Genie
+  object at 0x13d29b8c0>", "genie_agent_name": "Genie", "include_context": false}'
+request_time: '2026-03-02T06:39:23.579Z'
+response_preview: '{"messages": [{"content": "|    | PRODUCT   |   HOUR |   total_failures
+  |\n|---:|:----------|-------:|-----------------:|\n|  0 | PL        |      0 |            20548
+  |\n|  1 | PL        |      1 |             9411 |\n|  2 | PL        |     10 |            85170
+  |\n|  3 | PL        |     11 |           102553 |\n|  4 | PL        |     12 |           108646
+  |\n|  5 | PL        |     13 |           101405 |\n|  6 | PL        |     14 |            66510
+  |\n|  7 | PL        |     15 |            89562 |\n|  8 | PL        |     16 |            86214
+  |\n|  9 | PL        |     17 |            85214 |\n| 10 | PL        |     18 |            91934
+  |\n| 11 | PL        |     19 |            96918 |\n| 12 | PL        |      2 |             5421
+  |\n| 13 | PL        |     20 |            90364 |\n| 14 | PL        |     21 |            75131
+  |\n| 15 | PL        |     22 |            52602 |\n| 16 | PL        |     23 |            32094
+  |\n| 17 | PL        |      3 |             2240 |\n| 18 | PL ...'
+state: OK
+trace_id: tr-89936b75261f7215465be9d9d45acb93
+trace_location:
+  mlflow_experiment:
+    experiment_id: '0'
+  type: MLFLOW_EXPERIMENT

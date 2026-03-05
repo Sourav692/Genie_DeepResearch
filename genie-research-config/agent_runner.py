@@ -12,24 +12,21 @@ import time
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from zoneinfo import ZoneInfo
 
-import mlflow
 import yaml
-from databricks.sdk import WorkspaceClient
-from databricks_langchain import ChatDatabricks
-from databricks_langchain.genie import GenieAgent
-from langchain_core.runnables import RunnableLambda
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, StateGraph, add_messages
-from langgraph.graph.state import CompiledStateGraph
-from mlflow.entities import SpanType
 from pydantic import BaseModel
 from typing_extensions import Annotated, TypedDict
 
-CONFIG_PATH = Path(__file__).resolve().parent.parent / "configs.yaml"
-ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+_APP_DIR = Path(__file__).resolve().parent
+_local_config = _APP_DIR / "configs.yaml"
+_parent_config = _APP_DIR.parent / "configs.yaml"
+CONFIG_PATH = _local_config if _local_config.exists() else _parent_config
+
+_local_env = _APP_DIR / ".env"
+_parent_env = _APP_DIR.parent / ".env"
+ENV_PATH = _local_env if _local_env.exists() else _parent_env
 
 
 def _load_env():
@@ -45,32 +42,119 @@ def _load_env():
                     os.environ[k] = v
 
 
-_load_env()
-
-
 def _load_config():
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
 
 # ---------------------------------------------------------------------------
-# Config
+# Lazy initialization: heavy imports and agent construction only on first use
 # ---------------------------------------------------------------------------
-_cfg = _load_config()
-_agent_cfg = _cfg["agent_configs"]
 
-LLM_ENDPOINT_NAME = _agent_cfg["llm"]["endpoint_name"]
-LLM_TEMPERATURE = _agent_cfg["llm"]["temperature"]
-GENIE_SPACE_ID = _agent_cfg["genie_agent"]["space_id"]
-GENIE_DESCRIPTION = _agent_cfg["genie_agent"]["description"]
-PARALLEL_EXECUTOR_DESCRIPTION = _agent_cfg["parallel_executor_agent"]["description"]
-MAX_ITERATIONS = _agent_cfg["supervisor_agent"]["max_iterations"]
-SYSTEM_PROMPT = _agent_cfg["supervisor_agent"]["system_prompt"]
-RESEARCH_PROMPT = _agent_cfg["supervisor_agent"]["research_prompt"]
-FINAL_ANSWER_PROMPT = _agent_cfg["supervisor_agent"]["final_answer_prompt"]
-QUALITY_CHECK_PROMPT = _agent_cfg["supervisor_agent"].get("quality_check_prompt", "")
-POST_WORKER_ROUTING_PROMPT = _agent_cfg["supervisor_agent"].get("post_worker_routing_prompt", "")
-MAX_CONVERSATION_MESSAGES = _agent_cfg.get("conversation", {}).get("max_messages", 7)
+_initialized = False
+_init_error = None
+
+# Module-level references populated by _ensure_initialized()
+genie_agent = None
+llm = None
+multi_agent = None
+genie_cache = None
+
+LLM_ENDPOINT_NAME = None
+LLM_TEMPERATURE = None
+GENIE_SPACE_ID = None
+GENIE_DESCRIPTION = None
+MAX_ITERATIONS = None
+SYSTEM_PROMPT = None
+RESEARCH_PROMPT = None
+FINAL_ANSWER_PROMPT = None
+QUALITY_CHECK_PROMPT = None
+POST_WORKER_ROUTING_PROMPT = None
+MAX_CONVERSATION_MESSAGES = None
+
+
+def _ensure_initialized():
+    """Import heavy dependencies and build the graph on first call."""
+    global _initialized, _init_error
+    global genie_agent, llm, multi_agent, genie_cache
+    global LLM_ENDPOINT_NAME, LLM_TEMPERATURE, GENIE_SPACE_ID, GENIE_DESCRIPTION
+    global MAX_ITERATIONS, SYSTEM_PROMPT, RESEARCH_PROMPT, FINAL_ANSWER_PROMPT
+    global QUALITY_CHECK_PROMPT, POST_WORKER_ROUTING_PROMPT, MAX_CONVERSATION_MESSAGES
+
+    if _initialized:
+        return
+    if _init_error:
+        raise RuntimeError(_init_error)
+
+    try:
+        _load_env()
+
+        import mlflow
+        from databricks.sdk import WorkspaceClient
+        from databricks_langchain import ChatDatabricks
+        from databricks_langchain.genie import GenieAgent
+        from langchain_core.runnables import RunnableLambda
+        from langgraph.checkpoint.memory import MemorySaver
+        from langgraph.graph import END, StateGraph, add_messages
+
+        mlflow.set_tracking_uri("databricks")
+
+        cfg = _load_config()
+        ac = cfg["agent_configs"]
+
+        LLM_ENDPOINT_NAME = ac["llm"]["endpoint_name"]
+        LLM_TEMPERATURE = ac["llm"]["temperature"]
+        GENIE_SPACE_ID = ac["genie_agent"]["space_id"]
+        GENIE_DESCRIPTION = ac["genie_agent"]["description"]
+        MAX_ITERATIONS = ac["supervisor_agent"]["max_iterations"]
+        SYSTEM_PROMPT = ac["supervisor_agent"]["system_prompt"]
+        RESEARCH_PROMPT = ac["supervisor_agent"]["research_prompt"]
+        FINAL_ANSWER_PROMPT = ac["supervisor_agent"]["final_answer_prompt"]
+        QUALITY_CHECK_PROMPT = ac["supervisor_agent"].get("quality_check_prompt", "")
+        POST_WORKER_ROUTING_PROMPT = ac["supervisor_agent"].get("post_worker_routing_prompt", "")
+        MAX_CONVERSATION_MESSAGES = ac.get("conversation", {}).get("max_messages", 7)
+
+        genie_cache = QueryCache(ttl_seconds=300)
+
+        _db_host = os.environ.get("DATABRICKS_HOST", os.environ.get("DB_MODEL_SERVING_HOST_URL", ""))
+        _db_token = os.environ.get("DATABRICKS_TOKEN", os.environ.get("DATABRICKS_GENIE_PAT", ""))
+        ws_kwargs = {}
+        if _db_host:
+            ws_kwargs["host"] = _db_host
+        if _db_token:
+            ws_kwargs["token"] = _db_token
+
+        genie_agent = GenieAgent(
+            genie_space_id=GENIE_SPACE_ID,
+            genie_agent_name="Genie",
+            description=GENIE_DESCRIPTION,
+            client=WorkspaceClient(**ws_kwargs),
+        )
+        llm = ChatDatabricks(endpoint=LLM_ENDPOINT_NAME, temperature=LLM_TEMPERATURE)
+
+        _genie_node = functools.partial(agent_node, agent=genie_agent, name="Genie")
+
+        wf = StateGraph(AgentState)
+        wf.add_node("Genie", _genie_node)
+        wf.add_node("ParallelExecutor", research_planner_node)
+        wf.add_node("supervisor", supervisor_agent)
+        wf.add_node("final_answer", final_answer)
+        wf.set_entry_point("supervisor")
+        for worker in ["Genie", "ParallelExecutor"]:
+            wf.add_edge(worker, "supervisor")
+        wf.add_conditional_edges(
+            "supervisor",
+            lambda x: x["next_node"],
+            {**{k: k for k in ["Genie", "ParallelExecutor"]}, "FINISH": "final_answer"},
+        )
+        wf.add_edge("final_answer", END)
+        multi_agent = wf.compile(checkpointer=MemorySaver())
+
+        _initialized = True
+    except Exception as e:
+        _init_error = str(e)
+        raise
+
 
 # ---------------------------------------------------------------------------
 # Query cache
@@ -92,25 +176,6 @@ class QueryCache:
 
     def set(self, query: str, response: str):
         self._cache[query.strip().lower()] = (response, time.time())
-
-
-genie_cache = QueryCache(ttl_seconds=300)
-
-# ---------------------------------------------------------------------------
-# Genie & LLM
-# ---------------------------------------------------------------------------
-
-_db_host = os.environ.get("DATABRICKS_HOST", os.environ.get("DB_MODEL_SERVING_HOST_URL", ""))
-_db_token = os.environ.get("DATABRICKS_TOKEN", os.environ.get("DATABRICKS_GENIE_PAT", ""))
-
-genie_agent = GenieAgent(
-    genie_space_id=GENIE_SPACE_ID,
-    genie_agent_name="Genie",
-    description=GENIE_DESCRIPTION,
-    client=WorkspaceClient(host=_db_host, token=_db_token),
-)
-
-llm = ChatDatabricks(endpoint=LLM_ENDPOINT_NAME, temperature=LLM_TEMPERATURE)
 
 
 # ---------------------------------------------------------------------------
@@ -163,8 +228,11 @@ class QualityCheckOutput(BaseModel):
 # State
 # ---------------------------------------------------------------------------
 
+from langgraph.graph import add_messages as _add_messages
+
+
 class AgentState(TypedDict):
-    messages: Annotated[list, add_messages]
+    messages: Annotated[list, _add_messages]
     next_node: str
     iteration_count: int
     research_plan: Optional[Dict[str, Any]]
@@ -186,6 +254,8 @@ def _log(msg: str):
 
 
 def supervisor_agent(state):
+    from langchain_core.runnables import RunnableLambda
+
     try:
         count = state.get("iteration_count", 0) + 1
         if count > MAX_ITERATIONS:
@@ -402,6 +472,8 @@ def agent_node(state, agent, name):
 
 
 def final_answer(state):
+    from langchain_core.runnables import RunnableLambda
+
     try:
         preprocessor = RunnableLambda(lambda s: s["messages"] + [{"role": "user", "content": FINAL_ANSWER_PROMPT}])
         final_answer_chain = preprocessor | llm
@@ -438,33 +510,6 @@ def final_answer(state):
 
 
 # ---------------------------------------------------------------------------
-# Build the graph
-# ---------------------------------------------------------------------------
-
-genie_node = functools.partial(agent_node, agent=genie_agent, name="Genie")
-
-workflow = StateGraph(AgentState)
-workflow.add_node("Genie", genie_node)
-workflow.add_node("ParallelExecutor", research_planner_node)
-workflow.add_node("supervisor", supervisor_agent)
-workflow.add_node("final_answer", final_answer)
-
-workflow.set_entry_point("supervisor")
-for worker in ["Genie", "ParallelExecutor"]:
-    workflow.add_edge(worker, "supervisor")
-
-workflow.add_conditional_edges(
-    "supervisor",
-    lambda x: x["next_node"],
-    {**{k: k for k in ["Genie", "ParallelExecutor"]}, "FINISH": "final_answer"},
-)
-workflow.add_edge("final_answer", END)
-
-memory = MemorySaver()
-multi_agent = workflow.compile(checkpointer=memory)
-
-
-# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -472,6 +517,8 @@ async def _run_async(query: str, thread_id: str | None = None) -> tuple[str, lis
     """Run the full multi-agent pipeline and return (answer, log_lines)."""
     global _log_lines
     _log_lines = []
+
+    _ensure_initialized()
 
     thread_id = thread_id or str(uuid.uuid4())
     config = {"configurable": {"thread_id": thread_id}}
@@ -490,11 +537,21 @@ async def _run_async(query: str, thread_id: str | None = None) -> tuple[str, lis
 
 
 def run_query(query: str, thread_id: str | None = None) -> tuple[str, list[str]]:
-    """Synchronous wrapper around the async pipeline. Returns (answer, log_lines)."""
-    try:
-        import nest_asyncio
-        nest_asyncio.apply()
-    except ImportError:
-        pass
+    """Synchronous wrapper around the async pipeline. Returns (answer, log_lines).
 
-    return asyncio.run(_run_async(query, thread_id))
+    Runs the async pipeline in a dedicated thread with a fresh event loop
+    so it works inside uvloop-based servers (Gradio/uvicorn) where
+    nest_asyncio cannot patch the loop.
+    """
+    import concurrent.futures
+
+    def _run_in_thread():
+        loop = asyncio.new_event_loop()
+        try:
+            return loop.run_until_complete(_run_async(query, thread_id))
+        finally:
+            loop.close()
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(_run_in_thread)
+        return future.result()

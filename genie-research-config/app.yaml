@@ -4,4 +4,14 @@ command:
 
 env:
   - name: DATABRICKS_WAREHOUSE_ID
-    valueFrom: "4b9b953939869799"
+    value: "4b9b953939869799"
+
+resources:
+  - name: sql-warehouse
+    sql_warehouse:
+      id: "4b9b953939869799"
+      permission: CAN_USE
+
+user_api_scopes:
+  - sql
+  - dashboards.genie
